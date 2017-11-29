@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 import warnings
-
+import itertools
+from netdiff.utils import _netjson_networkgraph as to_netjson
 
 #Genera un grafo casualmente. Ad ogni nodo viene dato un id e numero di interfacce. Ad ogni arco un id e peso.
 def GeneraGrafoRandom(num,prob,randWeight=False):
@@ -56,6 +57,7 @@ def ConnettiInterfacce():
             archi[y['ID']]= []
             archi[y['ID']].append(a)
             archi[y['ID']].append(b)
+            archi[y['ID']].append(y['weight'])
             if(i>num_int):
                 i=0
             else:
@@ -65,18 +67,62 @@ def ConnettiInterfacce():
     return H,archi
 
 
+#funzione ausiliaria per modificare grafo
+def CercaNodoCorrispondente(origine,destinazione,nome_arco,grafo):
+    ret=float(destinazione)+0.1 
+    interf = grafo.node[destinazione]['interfacce']
+    for key, value in interf.iteritems():
+        for q in value:
+            if(q==nome_arco):
+                if(key!=0):
+                    ret+=float(key)/10
+    return ret
+                    
+
 #Modifica un grafo generando per ogni nodo una clique di nodi in base al suo numero di interfacce
 def ModificaGrafo(G,archi):
     for n,d in G.nodes_iter(data=True):
         print n,d
+         
+    rimuovi=[]    
+    for n in G.nodes():
+        rimuovi.append(n)
+        num_int = G.node[n]['n_interf']
+        elem=[]
+        for i in range(num_int):
+            if(i!=0):
+                z=(float(n)+0.1 + float(i)/10)
+            else:
+                z=float(n)+0.1
+            G.add_node(z)  
+            elem.append(z)
+            
+        for x, y in itertools.combinations(elem, 2):
+            G.add_edge(x,y,weight=0.00001) 
+        
+        interf = G.node[n]['interfacce']
+        
+        for key, value in interf.iteritems():
+            w=elem[key]
+            for q in value:         #ad un interfaccia possono essere attacatti piu edge
+                if(archi[q][0]!=n):
+                    to= CercaNodoCorrispondente(n,(archi[q][0]),q,G)
+                    G.add_edge(w,to,weight=archi[q][2]) #non hanno nome i nuovi archi
+                else:
+                    to=CercaNodoCorrispondente(n,(archi[q][1]),q,G)
+                    G.add_edge(w,to,weight=archi[q][2])
     
-    print json.dumps(archi, indent=4) 
-    
-    
+    G.remove_nodes_from(rimuovi)
+                         
+    warnings.filterwarnings("ignore")
+    nx.draw(G, with_labels=True)
+    plt.show()
+
+   
 
 #funzione ausiliaria per i test
 def Genera_e_Salva():
-    g= GeneraGrafoRandom(8,0.35,True)
+    g= GeneraGrafoRandom(5,0.4,True)
     SalvaInGraphml(g)
     
     warnings.filterwarnings("ignore")
@@ -92,12 +138,3 @@ def Run_Test():
 
 #Genera_e_Salva()
 Run_Test()
-
-
-'''
-graph= nx.read_graphml('rete.graphml')
-warnings.filterwarnings("ignore")
-nx.draw(graph, with_labels=True)
-plt.show()'''
-
-
