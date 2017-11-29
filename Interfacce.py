@@ -1,10 +1,11 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
+import json
 import warnings
 
 
-#genera grafo casuale e assegna: per ogni nodo, id e numero di interfaccie; per ogni arco, id e peso.
+#Genera un grafo casualmente. Ad ogni nodo viene dato un id e numero di interfacce. Ad ogni arco un id e peso.
 def GeneraGrafoRandom(num,prob,randWeight=False):
     G = nx.gnp_random_graph(num, prob)
     
@@ -28,12 +29,18 @@ def GeneraGrafoRandom(num,prob,randWeight=False):
         
     return G
 
+
 def SalvaInGraphml(G):
     nx.write_graphml(G, "rete.graphml")
     
+    
+#Connetti gli edge di un nodo alle sue interfacce.
+#return: @H grafo contente per ogni nodo le informazioni sulle proprie intefacce e senza nessun arco tra i nodi
+#return: @archi un dizionario contentente tutti gli archi del grafo
 def ConnettiInterfacce():
     G= nx.read_graphml('rete.graphml')
     H= nx.Graph()
+    archi={}
     
     for n,d in G.nodes_iter(data=True): 
         num_int=d['n_interf']
@@ -46,30 +53,51 @@ def ConnettiInterfacce():
         
         i=0
         for a,b,y in G.edges_iter(n, data=True):
+            archi[y['ID']]= []
+            archi[y['ID']].append(a)
+            archi[y['ID']].append(b)
             if(i>num_int):
                 i=0
             else:
                 interf[i].append(y['ID'])
-            i+=1        
-        
-        
-    for n,d in H.nodes_iter(data=True):
-        print n,d
-        
+            i+=1       
+            
+    return H,archi
 
+
+#Modifica un grafo generando per ogni nodo una clique di nodi in base al suo numero di interfacce
+def ModificaGrafo(G,archi):
+    for n,d in G.nodes_iter(data=True):
+        print n,d
+    
+    print json.dumps(archi, indent=4) 
+    
+    
 
 #funzione ausiliaria per i test
 def Genera_e_Salva():
-    g= GeneraGrafoRandom(15,0.18,True)
+    g= GeneraGrafoRandom(8,0.35,True)
     SalvaInGraphml(g)
     
     warnings.filterwarnings("ignore")
     nx.draw(g, with_labels=True)
     plt.show()
 
+#funzione ausiliaria per i test
+def Run_Test():
+    g,archi = ConnettiInterfacce()
+    ModificaGrafo(g,archi)
+
+
 
 #Genera_e_Salva()
-ConnettiInterfacce()
+Run_Test()
 
+
+'''
+graph= nx.read_graphml('rete.graphml')
+warnings.filterwarnings("ignore")
+nx.draw(graph, with_labels=True)
+plt.show()'''
 
 
