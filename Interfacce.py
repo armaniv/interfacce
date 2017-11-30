@@ -5,9 +5,23 @@ import json
 import warnings
 import itertools
 from netdiff.utils import _netjson_networkgraph as to_netjson
+import random
+
+
+def PrintGrafoInJson(G,njproto='OLSR',njversion='0.1',njrevision='a09z',njmetric='ETX'):
+    js= to_netjson(njproto,
+                    njversion,
+                    njrevision,
+                    njmetric,
+                    G.nodes(data=True),
+                    G.edges(data=True), dict=True)
+    f1=open('./topology.json', 'w+')
+    f1.write(json.dumps(js, indent=4))
+    f1.close()
+
 
 #Genera un grafo casualmente. Ad ogni nodo viene dato un id e numero di interfacce. Ad ogni arco un id e peso.
-def GeneraGrafoRandom(num,prob,randWeight=False):
+def GeneraGrafoRandom(num,prob,randWeight=False,MenoInterf=False):
     G = nx.gnp_random_graph(num, prob)
     
     G.remove_nodes_from(nx.isolates(G))
@@ -16,9 +30,12 @@ def GeneraGrafoRandom(num,prob,randWeight=False):
     nx.set_edge_attributes(G, 'ID','')
     
     #non posso creare qui dizionario perche' graphml di base non sopporta  tipi composti
-    for n,d in G.nodes_iter(data=True): 
-        d['n_interf']= G.degree(n)
-    
+    for n,d in G.nodes_iter(data=True):
+        if(MenoInterf==False): 
+            d['n_interf']= G.degree(n)
+        else:
+            d['n_interf']= random.randint(1, G.degree(n))
+            
     i=0
     for u,v,d in G.edges(data=True):
         d['ID']='e'+str(i)
@@ -58,8 +75,9 @@ def ConnettiInterfacce():
             archi[y['ID']].append(a)
             archi[y['ID']].append(b)
             archi[y['ID']].append(y['weight'])
-            if(i>num_int):
+            if(i>=num_int):
                 i=0
+                interf[i].append(y['ID'])
             else:
                 interf[i].append(y['ID'])
             i+=1       
@@ -113,6 +131,12 @@ def ModificaGrafo(G,archi):
                     G.add_edge(w,to,weight=archi[q][2])
     
     G.remove_nodes_from(rimuovi)
+    
+    #PrintGrafoInJson(G)
+    
+    BC = nx.betweenness_centrality(G, weight='weight',endpoints=True,normalized=False)
+    print '------------'
+    print json.dumps(BC, indent=4)
                          
     warnings.filterwarnings("ignore")
     nx.draw(G, with_labels=True)
@@ -122,7 +146,7 @@ def ModificaGrafo(G,archi):
 
 #funzione ausiliaria per i test
 def Genera_e_Salva():
-    g= GeneraGrafoRandom(5,0.4,True)
+    g= GeneraGrafoRandom(5,0.4,randWeight=True,MenoInterf=True)
     SalvaInGraphml(g)
     
     warnings.filterwarnings("ignore")
