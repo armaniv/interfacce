@@ -176,7 +176,7 @@ def CalcolaCentralitaGrafoEspanso(G, numnodiorginale):
         BCClique[key] = value - BCsecondo[key]
 
     print '------------'
-    print 'BC grafo dopo espansione nodo 4:'
+    print 'BC grafo dopo espansione nodo:'
     print json.dumps(BCClique, indent=4)
     ''''
     nx.draw(G, with_labels=True)
@@ -195,7 +195,8 @@ def Genera_e_Salva():
 def Run_Test():
     grafo = nx.read_graphml('rete.graphml')
 
-    BC_origin = nx.betweenness_centrality(grafo, weight='weight', endpoints=False, normalized=False)
+    BC_origin = nx.betweenness_centrality(grafo, weight='weight',
+                                          endpoints=False, normalized=False)
     print "BC grafo originale:"
     print json.dumps(BC_origin, indent=4)
     #nx.draw(grafo, with_labels=True)
