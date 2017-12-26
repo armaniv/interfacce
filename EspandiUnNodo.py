@@ -16,6 +16,12 @@ warnings.filterwarnings("ignore")
 aggiunti = []
 
 
+# Salva su file (topology.json) in formato NetJSON del grafo passato come argomento
+#@G un grafo networkx
+#@njproto il protocollo da inserire nell'intestazione del file NetJSON
+#@njversion la versione da inserire nell'intestazione del file NetJSON
+#@njrevision id revisione da inserire nell'intestazione del file NetJSON
+#@njmetric la metrica da inserire nell'intestazione del file NetJSON
 def PrintGrafoInJson(G, njproto='OLSR', njversion='0.1', njrevision='a09z',
                      njmetric='ETX'):
     js = to_netjson(njproto,
@@ -31,6 +37,12 @@ def PrintGrafoInJson(G, njproto='OLSR', njversion='0.1', njrevision='a09z',
 
 # Genera un grafo casualmente. Ad ogni nodo viene dato un id e numero di
 # interfacce. Ad ogni arco un id e peso.
+#@num il numero di nodi del grafo
+#@prob la probabilita' di genrazione di un arco
+#@randWeight se True i pesi degli archi hanno valori nell'intervallo [1.0 , 1.1)
+#@MenoInterf se True il numero di interfacce per nodo e <= al numero di archi nel
+# grafo originale
+# return: @G il grafo generato
 def GeneraGrafoRandom(num, prob, randWeight=False, MenoInterf=False):
     G = nx.gnp_random_graph(num, prob)
 
@@ -58,6 +70,8 @@ def GeneraGrafoRandom(num, prob, randWeight=False, MenoInterf=False):
     return G
 
 
+# Salva grafo in formaleto GraphML XML
+#@G il grafo da salvare
 def SalvaInGraphml(G):
     nx.write_graphml(G, "rete.graphml")
 
@@ -96,6 +110,10 @@ def ConnettiInterfacce():
     return H, archi
 
 
+# Connetti i nodi di un grafo diversi da quelli frutto dell'esapnasione
+#@G un grafo con tutte le informazioni genrate da GeneraGrafoRandom
+#@archi un dizionario contentente tutti gli archi del grafo
+#@UnicoNodoDaEspandere id del nodo da espandere
 def ConnettiNodiStandard(G, archi, UnicoNodoDaEspandere):
     for n in G.nodes():
         if(n in set(aggiunti)):
@@ -115,6 +133,9 @@ def ConnettiNodiStandard(G, archi, UnicoNodoDaEspandere):
 
 # Modifica un grafo generando per ogni nodo una clique di nodi in base al suo
 # numero di interfacce
+#@G un grafo con tutte le informazioni genrate da GeneraGrafoRandom
+#@archi un dizionario contentente tutti gli archi del grafo
+#@UnicoNodoDaEspandere id del nodo da espandere
 def ModificaGrafo(G, archi, UnicoNodoDaEspandere):
     numnodiorginale = len(G.nodes())
 
@@ -159,6 +180,11 @@ def ModificaGrafo(G, archi, UnicoNodoDaEspandere):
     CalcolaCentralitaGrafoEspanso(G, numnodiorginale)
 
 
+# Calcola la betweenness_centrality per i nodi espansioni come: la BC senza contare
+# le rotte che iniziano dai nodi espansi, meno, la BC calcolata partendo solamente
+# dai nodi espansi
+#@G grafo con i nodi espansi di cui calcolare la centralita'
+#@numnodiorginale il numero di nodi del grafo originale, prima dell'esapnsione
 def CalcolaCentralitaGrafoEspanso(G, numnodiorginale):
     BCprimo = BC_salta_nodi(G, aggiunti, weight='weight', endpoints=False,
                             normalized=False)
