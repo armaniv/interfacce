@@ -1,0 +1,111 @@
+{
+    "type": "NetworkGraph", 
+    "protocol": "OLSR", 
+    "version": "0.1", 
+    "revision": "a09z", 
+    "metric": "ETX", 
+    "nodes": [
+        {
+            "id": "4.1"
+        }, 
+        {
+            "id": "4.3"
+        }, 
+        {
+            "id": "4.2"
+        }, 
+        {
+            "id": "1", 
+            "properties": {
+                "n_interf": 1, 
+                "interfacce": {
+                    "0": [
+                        "e1"
+                    ]
+                }
+            }
+        }, 
+        {
+            "id": "0", 
+            "properties": {
+                "n_interf": 1, 
+                "interfacce": {
+                    "0": [
+                        "e0"
+                    ]
+                }
+            }
+        }, 
+        {
+            "id": "3", 
+            "properties": {
+                "n_interf": 1, 
+                "interfacce": {
+                    "0": [
+                        "e2", 
+                        "e4"
+                    ]
+                }
+            }
+        }, 
+        {
+            "id": "2", 
+            "properties": {
+                "n_interf": 3, 
+                "interfacce": {
+                    "0": [
+                        "e1"
+                    ], 
+                    "1": [
+                        "e2"
+                    ], 
+                    "2": [
+                        "e3"
+                    ]
+                }
+            }
+        }
+    ], 
+    "links": [
+        {
+            "source": "4.1", 
+            "target": "0", 
+            "cost": 1.04886473454
+        }, 
+        {
+            "source": "4.1", 
+            "target": "4.3", 
+            "cost": 1e-05
+        }, 
+        {
+            "source": "4.1", 
+            "target": "4.2", 
+            "cost": 1e-05
+        }, 
+        {
+            "source": "4.3", 
+            "target": "2", 
+            "cost": 1.05598062318
+        }, 
+        {
+            "source": "4.3", 
+            "target": "4.2", 
+            "cost": 1e-05
+        }, 
+        {
+            "source": "4.2", 
+            "target": "3", 
+            "cost": 1.00522156646
+        }, 
+        {
+            "source": "1", 
+            "target": "2", 
+            "cost": 1.03291123455
+        }, 
+        {
+            "source": "3", 
+            "target": "2", 
+            "cost": 1.07789499839
+        }
+    ]
+}

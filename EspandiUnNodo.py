@@ -175,7 +175,7 @@ def ModificaGrafo(G, archi, UnicoNodoDaEspandere):
 
     ConnettiNodiStandard(G, archi, UnicoNodoDaEspandere)
 
-    # PrintGrafoInJson(G)
+    PrintGrafoInJson(G)
 
     CalcolaCentralitaGrafoEspanso(G, numnodiorginale)
 
