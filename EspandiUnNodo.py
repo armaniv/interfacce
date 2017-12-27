@@ -70,7 +70,7 @@ def GeneraGrafoRandom(num, prob, randWeight=False, MenoInterf=False):
     return G
 
 
-# Salva grafo in formaleto GraphML XML
+# Salva grafo in formato GraphML XML
 #@G il grafo da salvare
 def SalvaInGraphml(G):
     nx.write_graphml(G, "rete.graphml")
@@ -152,8 +152,8 @@ def ModificaGrafo(G, archi, UnicoNodoDaEspandere):
                 z = round((float(n) + 0.1 + float(i) / 10), 2)
             else:
                 z = float(n) + 0.1
-            G.add_node(z)  # !!! id nodi aggiunti int, es 4.1    NON '4.1'
-            elem.append(z)
+            G.add_node(str(z))  # !!! id nodi string, es '4.1'
+            elem.append(str(z))
 
         for x, y in itertools.combinations(elem, 2):
             G.add_edge(x, y, weight=0.00001)
@@ -180,7 +180,7 @@ def ModificaGrafo(G, archi, UnicoNodoDaEspandere):
     CalcolaCentralitaGrafoEspanso(G, numnodiorginale)
 
 
-# Calcola la betweenness_centrality per i nodi espansioni come: la BC senza contare
+# Calcola la betweenness_centrality per i nodi espansi come: la BC senza contare
 # le rotte che iniziano dai nodi espansi, meno, la BC calcolata partendo solamente
 # dai nodi espansi
 #@G grafo con i nodi espansi di cui calcolare la centralita'
@@ -229,7 +229,7 @@ def Run_Test():
     # plt.show()
 
     g, archi = ConnettiInterfacce()
-    ModificaGrafo(g, archi, '4')  # ad esempio '4' e non 4!
+    ModificaGrafo(g, archi, '4')  # !!! id nodi string
 
 
 

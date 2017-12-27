@@ -97,15 +97,12 @@ def CercaNodoCorrispondente(origine, destinazione, nome_arco, grafo):
             if(q == nome_arco):
                 if(key != 0):
                     ret += float(key) / 10
-    return ret
+    return str(ret)
 
 
 # Modifica un grafo generando per ogni nodo una clique di nodi in base al suo
 # numero di interfacce
 def ModificaGrafo(G, archi):
-    for n, d in G.nodes_iter(data=True):
-        print n, d
-
     rimuovi = []
     for n in G.nodes():
         rimuovi.append(n)
@@ -116,8 +113,8 @@ def ModificaGrafo(G, archi):
                 z = (float(n) + 0.1 + float(i) / 10)
             else:
                 z = float(n) + 0.1
-            G.add_node(z)
-            elem.append(z)
+            G.add_node(str(z))
+            elem.append(str(z))
 
         for x, y in itertools.combinations(elem, 2):
             G.add_edge(x, y, weight=0.00001)
@@ -137,11 +134,6 @@ def ModificaGrafo(G, archi):
     G.remove_nodes_from(rimuovi)
 
     # PrintGrafoInJson(G)
-
-    BC = nx.betweenness_centrality(G, weight='weight', endpoints=True,
-                                   normalized=False)
-    print '------------'
-    print json.dumps(BC, indent=4)
 
     warnings.filterwarnings("ignore")
     nx.draw(G, with_labels=True)
